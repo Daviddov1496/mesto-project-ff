@@ -1,0 +1,14 @@
+@font-face {
+    font-family: Raleway sans-serif;
+    src: url(nado_sdelat_idealno-main\fonts\Raleway-Regular.woff2) format('woff2');
+    src: url(nado_sdelat_idealno-main\fonts\Raleway-Regular.woff) format('woff');
+    font-weight: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: Raleway serif;
+    src: url(nado_sdelat_idealno-main\fonts\Raleway-ExtraBold.woff2) format('woff2');
+    src: url(nado_sdelat_idealno-main\fonts\Raleway-ExtraBold.woff) format('woff');
+    font-weight: bold;
+    font-display: swap;
+}

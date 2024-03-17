@@ -1,113 +1,100 @@
 import "./index.css";
-import { initialCards } from "./components/cards.js";
-import { imagePopup, openPopup } from "./components/modal.js";
+import { isLiked, createCard, deleteCard, initialCards} from "./components/cards.js";
+import { openModal, closeModal } from "./components/modal.js";
 
-const cardTemplate = document.querySelector("#card-template").content;
 const placesList = document.querySelector(".places__list");
+//Изображене и его попап
+const popupImage = document.querySelector(".popup__image");
+const popupTypeImage = document.querySelector('.popup_type_image');
+const openPopup = document.querySelectorAll(".popup");
+const popupCaption = document.querySelector('.popup__caption')
+//Карточка профиля
+const editProfile = document.forms["edit-profile"];
+const nameInput = editProfile.elements.name;
+const jobInput = editProfile.elements.description;
+const profileTitle = document.querySelector(".profile__title"); 
+const profileDescription = document.querySelector(".profile__description");
+//Карточка места
+const newPlace = document.forms["new-place"];
+const inputNameFormPlace = newPlace.elements["place-name"];
+const inputNameFormLink = newPlace.elements.link;
+//Кнопки
+const closeButtonList = document.querySelectorAll(".popup__close");
+const addButton = document.querySelector(".profile__add-button");
+const editButton = document.querySelector(".profile__edit-button");
+//Попап карточек
+const popupNewCard = document.querySelector(".popup_type_new-card");
+const popupEditProfile = document.querySelector(".popup_type_edit");
 
-const formElement = document.forms["edit-profile"];
-const nameInput = formElement.elements.name;
-const jobInput = formElement.elements.description;
-
-const newElement = document.forms["new-place"];
-const placeName = newElement.elements["place-name"];
-const placeLink = newElement.elements.link;
-
-
-function deleteCard(cardClone) {
-  cardClone.remove();
+// фукции открытия и закрытия
+export function openModalImage(img) {
+  popupImage.src = img.src;
+  popupImage.alt = img.alt;
+  popupCaption.textContent = img.alt;
+  openModal(popupTypeImage);
 }
 
-function isLiked(evt) {
-  if (evt.target.classList.contains('card__like-button')) {
-    evt.target.classList.toggle('card__like-button_is-active');
-  }
-} 
- 
-function createCard(item, { deleteCard, isLiked }) {
-  const cardClone = cardTemplate.querySelector(".places__item").cloneNode(true);
-  const likeToggle = cardClone.querySelector('.card__like-button');
-  const deleteButton = cardClone.querySelector(".card__delete-button");
-  const popupPict = document.querySelector(".popup__image");
-  const cardData = cardClone.querySelector(".card__image");
-
-  cardClone.querySelector(".card__title").textContent = item.name;
-
-  cardData.src = item.link;
-  cardData.alt = item.name;
-
-  likeToggle.addEventListener('click', isLiked);
-
-  cardData.addEventListener("click", (evt) => {
-    const img = evt.target;
-    popupPict.src = img.src;
-    popupPict.alt = img.alt;
-    imagePopup.classList.add("popup_is-opened");
-  });
-
-  deleteButton.addEventListener("click", () => {
-    deleteCard(cardClone);
-  });
-  return cardClone;
-}
-
-initialCards.forEach((item) => {
-  const newCard = createCard(item, { deleteCard, newCardCreate, isLiked});
-  placesList.appendChild(newCard);
-});
-
-function handleFormSubmit(evt) {
+export function profileFormSubmit(evt) {
   evt.preventDefault();
-  const profileTitle = document.querySelector(".profile__title");
-  const profileDescription = document.querySelector(".profile__description");
-
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
-
-  closePopup();
+  closeModal();
 }
 
-formElement.addEventListener("submit", handleFormSubmit);
-
-function newCardCreate(evt) {
+export function placeFormSubmit(evt) {
   evt.preventDefault();
-
-  const cardClone = cardTemplate.querySelector(".places__item").cloneNode(true);
-  const cardTitle = cardClone.querySelector(".card__title");
-  const cardDescription = cardClone.querySelector(".card__description");
-
-  cardTitle.textContent = placeName.value;
-  cardDescription.textContent = placeLink.value;
-
-  const newItem = {
-    name: placeName.value,
-    link: placeLink.value,
-  };
-
-  const newCardItem = createCard(newItem, { deleteCard, isLiked });
-  placesList.prepend(newCardItem);
-
+  const placeName = inputNameFormPlace.value
+  const placeLink = inputNameFormLink.value
+  const newCard = createCard({ name: placeName, link: placeLink }, { deleteCard, isLiked, openModalImage, placeFormSubmit });
+  placesList.prepend(newCard);
   closePopup();
 }
 
-newElement.addEventListener("submit", newCardCreate);
-
-function closePopup() {
+export function closePopup() {
   openPopup.forEach(popup => {
   popup.classList.remove("popup_is-opened");
   });
-
-  formElement.reset();
-  newElement.reset();
   }
   
-  formElement.addEventListener("submit", function(evt) {
+  editProfile.addEventListener("submit", function(evt) {
   evt.preventDefault();
+  const newName = nameInput.value;
+  const newJob = jobInput.value;
+  profileTitle.textContent = newName;
+  profileDescription.textContent = newJob;
+  editProfile.reset();
   closePopup();
   });
   
-  newElement.addEventListener("submit", function(evt) {
+  newPlace.addEventListener("submit", function(evt) {
   evt.preventDefault();
+  placeFormSubmit(evt)
+  newPlace.reset();
   closePopup();
   });
 
+// Слушатели кликов
+editButton.addEventListener("click", function () {
+  const name = profileTitle.textContent;
+  const job = profileDescription.textContent;
+  nameInput.value = name;
+  jobInput.value = job;
+  openModal(popupEditProfile);
+});
+
+addButton.addEventListener("click", function () {
+  openModal(popupNewCard);
+});
+
+openPopup.forEach((popup) => {
+popup.addEventListener("mousedown", (evt) => {
+  if (evt.target === popup || evt.target.classList.contains("popup__close")) {
+    closeModal(popup);
+  }
+});
+});
+//ДОБАВЛЕНИЕ
+initialCards.forEach((item) => { 
+  const newCard = createCard(item, { deleteCard, isLiked, openModalImage, placeFormSubmit });
+  placesList.appendChild(newCard);
+});

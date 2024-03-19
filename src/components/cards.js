@@ -31,37 +31,3 @@ export const initialCards = [
       link: BaikalImg,
     }
 ];
-
-export function deleteCard(cardClone) { //УДАЛЕНИЕ
-  cardClone.remove();
-}
-
-export function isLiked(evt) { //ЛАЙК
-  if (evt.target.classList.contains('card__like-button')) {
-    evt.target.classList.toggle('card__like-button_is-active');
-  }
-}
-
-export function createCard(item, { deleteCard, isLiked, openModalImage}) { //СОЗДАНИЕ
-  const cardTemplate = document.querySelector("#card-template").content;
-  const cardClone = cardTemplate.querySelector(".places__item").cloneNode(true);
-  const likeToggle = cardClone.querySelector('.card__like-button');
-  const deleteButton = cardClone.querySelector(".card__delete-button");
-  const cardData = cardClone.querySelector(".card__image");
-
-  cardClone.querySelector(".card__title").textContent = item.name;
-    cardData.src = item.link;
-    cardData.alt = item.name;
-
-  cardData.addEventListener('click', () => {
-    openModalImage(cardData)
-  });
-
-  likeToggle.addEventListener('click', isLiked);
-
-  deleteButton.addEventListener("click", () => {
-    deleteCard(cardClone);
-  });
-  
-  return cardClone;
-}

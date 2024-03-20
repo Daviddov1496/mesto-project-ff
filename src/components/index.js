@@ -27,10 +27,10 @@ const popupNewCard = document.querySelector(".popup_type_new-card");
 const popupEditProfile = document.querySelector(".popup_type_edit");
 
 // фукции открытия и закрытия
-export function openModalImage(img) {
-  popupImage.src = img.src;
-  popupImage.alt = img.alt;
-  bigImageCaption.textContent = img.alt;
+export function openModalImage(item) {
+  popupImage.src = item.src;// картинка
+  popupImage.alt = item.alt;// alt в html
+  bigImageCaption.textContent = item.alt;// подпись при открытии картинки
   openModal(popupTypeImage);
 }
 

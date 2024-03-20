@@ -15,10 +15,11 @@ export function deleteCard(cardClone) {
     const likeToggle = cardClone.querySelector('.card__like-button');
     const deleteButton = cardClone.querySelector(".card__delete-button");
     const cardData = cardClone.querySelector(".card__image");
-  
-    cardClone.querySelector(".card__title").textContent = item.name;
+
     cardData.src = item.link;
-      
+    cardData.alt = item.name;
+
+    cardClone.querySelector(".card__title").textContent = cardData.alt;
   
     cardData.addEventListener('click', () => {
       openModalImage(cardData)

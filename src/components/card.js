@@ -1,49 +1,110 @@
-import { deleteCardApi, addLikeCard, deleteLikeCard } from "./api.js";
-import { closeModal } from "./modal.js";
-import { popupImage, bigImageCaption, popupTypeImage ,openModalImage} from "./index.js";
+import { openModalImage } from ".";
+import { addLikeCard, deleteCardApi, deleteLikeCard } from "./api";
 
-//переключатель лайка
-export function isLiked(evt) {
-  if (evt.target.classList.contains('card__like-button')) {
-    evt.target.classList.toggle('card__like-button_is-active');
-  }
-};
-
-export function deleteCard(cardClone, cardId) {
-  deleteCardApi(cardId)
-    .then(() => {
-      cardClone.remove();
-    })
-    .catch((err) => {
-      console.error("Error deleting card:", err);
-    });
+//УДАЛЕНИЕ
+function deleteCard(button) { 
+  const deleteIcon = button.closest('.card');
+  deleteIcon.remove();
+}
+//ЛАЙК
+function isLiked(icon) { 
+  icon.classList.add('card__like-button_is-active');
+}
+// Функция снятия лайка
+function unLiked(icon) {
+  icon.classList.remove('card__like-button_is-active');
 }
 
-export function createCard(data, userId, openModalImage, deleteCard, isLiked ) {
+// Функция переключения лайка с отправкой данных на сервер
+function likeToggle(icon, data, counter) {
+  if (!icon.classList.contains('card__like-button_is-active')) {
+    addLikeCard(data._id)
+    .then((response) => {
+      isLiked(icon)
+      counter.textContent = response.likes.length
+    })
+    .catch ((error) => {
+      console.log(error)
+    })
+  }
+  else {
+    deleteLikeCard(data._id)
+    .then((response) => {
+      unLiked(icon)
+      counter.textContent = response.likes.length
+    })
+    .catch ((error) => {
+      console.log(error)
+    })
+  }
+}
+// Функция поиска "лайкнутых" карточеу
+function hasLike (likes, profile) {
+  return likes.some(function(like) {
+    return like['_id'] === profile['_id']
+  })
+}
+
+// Функция создания карточки
+function createCard(data, profile, openModalImage) { 
   const cardTemplate = document.querySelector("#card-template").content;
   const cardClone = cardTemplate.querySelector(".places__item").cloneNode(true);
-  const likeToggle = cardClone.querySelector('.card__like-button');
-  const likeCounter = cardClone.querySelector(".card__like-counter");
+
+  const cardImage = cardClone.querySelector(".card__image");
+
+  const cardTitle = cardClone.querySelector(".card__title");
+
   const deleteButton = cardClone.querySelector(".card__delete-button");
-  const cardData = cardClone.querySelector(".card__image");
 
-  cardData.src = data.link;
-  cardData.alt = data.name;
-  cardData.textContent = data.name
-  //likeCounter.textContent = data.likes.length;
-  cardClone.querySelector(".card__title").textContent = cardData.alt;
+  const likeButton = cardClone.querySelector('.card__like-button');
+  const likeCounter = cardClone.querySelector('.card__like-count');
+  
+  const dataId = data._id;
 
-  deleteButton.addEventListener("click", () => {
-    deleteCard(cardClone);
+  cardImage.src = data.link;
+  cardImage.alt = data.name;
+  cardTitle.textContent = data.name;
+
+  likeCounter.textContent = data.likes.length;
+
+    if (data.owner['_id'] !== profile['_id']) {
+      deleteButton.classList.add('card__delete-button_disabled')
+      deleteButton.setAttribute('disabled', true)
+    }
+    else {
+      deleteButton.classList.remove('card__delete-button_disabled')
+      deleteButton.removeAttribute('disabled');
+      deleteButton.addEventListener('click', () => {
+        deleteCardApi(dataId)
+        .then (() => {
+          deleteCard(deleteButton)
+        })
+        .catch ((error) => {
+          console.log(error)
+        })
+    })
+  }
+
+  cardImage.addEventListener('click', ()=>{
+    openModalImage(data);
   });
- 
-  cardData.addEventListener('click', () => {
-    openModalImage(cardData);
+  if (hasLike(data.likes, profile)) { 
+    isLiked(likeButton)
+  }
+
+
+  likeButton.addEventListener('click', ()=> {
+    likeToggle(likeButton, data, likeCounter)
   });
 
-  likeToggle.addEventListener('click', () => {
-    isLiked(likeToggle);
-  });
+console.log(likeCounter.textContent)
+console.log(data._id)
+console.log(data.likes.length)
+console.log(data.likes)
+console.log(profile)
 
   return cardClone;
 }
+
+
+export { createCard, isLiked, deleteCard };

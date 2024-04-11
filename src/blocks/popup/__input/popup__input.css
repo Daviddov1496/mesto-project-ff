@@ -15,11 +15,15 @@
 }
 
 .popup__input:invalid {
-  border-bottom: 1px solid red;
+  border-bottom: 1px solid rgba(255, 0, 0);
 }
 
 .popup__input-error_active{
-  color: red;
+  margin: 5px, 0, 0, 0;
+  color: rgba(255, 0, 0);
+  text-align: left;
+  font-family: Inter;
+  font-size: 12px;
 }
 
 @media screen and (max-width: 568px) {

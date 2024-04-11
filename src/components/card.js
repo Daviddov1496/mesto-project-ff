@@ -1,21 +1,20 @@
-import { openModalImage } from ".";
 import { addLikeCard, deleteCardApi, deleteLikeCard } from "./api";
 
-//УДАЛЕНИЕ
+//УДАЛЕНИЕ КАРТОЧКИ
 function deleteCard(button) { 
   const deleteIcon = button.closest('.card');
   deleteIcon.remove();
 }
-//ЛАЙК
+//ДОБАВЛЕНИЕ ЛАЙКА
 function isLiked(icon) { 
   icon.classList.add('card__like-button_is-active');
 }
-// Функция снятия лайка
+//УДАЛЕНИЕ ЛАЙКА
 function unLiked(icon) {
   icon.classList.remove('card__like-button_is-active');
 }
 
-// Функция переключения лайка с отправкой данных на сервер
+//ОТПРАВКА ЛАЙКА НА СЕРВЕР
 function likeToggle(icon, data, counter) {
   if (!icon.classList.contains('card__like-button_is-active')) {
     addLikeCard(data._id)
@@ -38,7 +37,7 @@ function likeToggle(icon, data, counter) {
     })
   }
 }
-// Функция поиска "лайкнутых" карточеу
+//ПОИСК ЛАЙКНУТЫХ КАРТОЧЕК
 function hasLike (likes, profile) {
   return likes.some(function(like) {
     return like['_id'] === profile['_id']
@@ -70,6 +69,7 @@ function createCard(data, profile, openModalImage) {
     if (data.owner['_id'] !== profile['_id']) {
       deleteButton.classList.add('card__delete-button_disabled')
       deleteButton.setAttribute('disabled', true)
+      deleteButton.style.display = "none";
     }
     else {
       deleteButton.classList.remove('card__delete-button_disabled')
@@ -92,19 +92,11 @@ function createCard(data, profile, openModalImage) {
     isLiked(likeButton)
   }
 
-
   likeButton.addEventListener('click', ()=> {
     likeToggle(likeButton, data, likeCounter)
   });
 
-console.log(likeCounter.textContent)
-console.log(data._id)
-console.log(data.likes.length)
-console.log(data.likes)
-console.log(profile)
-
   return cardClone;
 }
 
-
-export { createCard, isLiked, deleteCard };
+export { createCard };

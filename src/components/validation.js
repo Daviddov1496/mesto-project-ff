@@ -1,18 +1,18 @@
-function showError(formElement, inputElement, errorMessage) {
+function showError(formElement, inputElement, errorMessage, validationConfig) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.add('popup__input_type_error');
+  inputElement.classList.add(validationConfig.inputErrorClass);
   errorElement.textContent = errorMessage;
-  errorElement.classList.add('popup__input-error_active');
+  errorElement.classList.add(validationConfig.errorClass);
 };
 
-function hideError(formElement, inputElement) {
+function hideError(formElement, inputElement, validationConfig) {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.remove('popup__input_type_error')
-  errorElement.classList.remove('popup__input-error_active');
+  inputElement.classList.remove(validationConfig.inputErrorClass)
+  errorElement.classList.remove(validationConfig.errorClass);
   errorElement.textContent = '';
 };
 
-function checkInputValidity(formElement, inputElement) {
+function checkInputValidity(formElement, inputElement, validationConfig) {
   if(inputElement.validity.patternMismatch){
     inputElement.setCustomValidity(inputElement.dataset.error_messege);
   } else {
@@ -20,9 +20,9 @@ function checkInputValidity(formElement, inputElement) {
   }
 
   if (!inputElement.validity.valid) {
-    showError(formElement, inputElement, inputElement.validationMessage);
+    showError(formElement, inputElement, inputElement.validationMessage, validationConfig);
   } else {
-    hideError(formElement, inputElement);
+    hideError(formElement, inputElement, validationConfig);
   }
 };
 
@@ -32,40 +32,40 @@ function hasInvalidInput (inputList) {
   });
 };
 
-function toggleButtonState(inputList, buttonElement) {
-  if(hasInvalidInput(inputList, buttonElement)) {
+function toggleButtonState(inputList, buttonElement, validationConfig) {
+  if(hasInvalidInput(inputList)) {
     buttonElement.setAttribute('disabled', true);
-    buttonElement.classList.add('popup__button_disabled');
+    buttonElement.classList.add(validationConfig.inactiveButtonClass);
   } else {
     buttonElement.removeAttribute('disabled');
-    buttonElement.classList.remove('popup__button_disabled');
+    buttonElement.classList.remove(validationConfig.inactiveButtonClass);
   };
 };
 
-function setEventListeners (formElement)  {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
+function setEventListeners(formElement, validationConfig)  {
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
-  toggleButtonState(inputList, buttonElement);
+  toggleButtonState(inputList, buttonElement, validationConfig);
 
   inputList.forEach((inputElement) => {
     inputElement.addEventListener('input', () => {
-      checkInputValidity(formElement, inputElement);
-      toggleButtonState(inputList, buttonElement);
+      checkInputValidity(formElement, inputElement, validationConfig);
+      toggleButtonState(inputList, buttonElement, validationConfig);
     });
   });
 };
 
 export function enableValidation(validationConfig) {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
+  const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
   formList.forEach((formElement) => {
       setEventListeners(formElement, validationConfig);
   });
 };
 
 export function clearValidation(formElement, validationConfig) {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
   inputList.forEach((inputElement) =>
     hideError(formElement, inputElement, validationConfig)

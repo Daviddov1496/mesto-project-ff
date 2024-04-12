@@ -56,19 +56,19 @@ function setEventListeners (formElement)  {
   });
 };
 
-export function enableValidation() {
+export function enableValidation(validationConfig) {
   const formList = Array.from(document.querySelectorAll('.popup__form'));
   formList.forEach((formElement) => {
-      setEventListeners(formElement);
+      setEventListeners(formElement, validationConfig);
   });
 };
 
-export function clearValidation(formElement) {
+export function clearValidation(formElement, validationConfig) {
   const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
   const buttonElement = formElement.querySelector('.popup__button');
 
   inputList.forEach((inputElement) =>
-    hideError(formElement, inputElement)
+    hideError(formElement, inputElement, validationConfig)
   );
-  toggleButtonState(inputList,buttonElement);
+  toggleButtonState(inputList,buttonElement, validationConfig);
 }

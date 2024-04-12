@@ -1,10 +1,9 @@
 import "../index.css";
-import { formEditProfile, formNewPlace, avatarFormElement, deleteCardForm, placesList, formElement, popupList, popupImage, popupTypeImage, bigImageCaption, avatarForm, avatarPopup, avatarImage, newAvatarForm, avatarInput, nameInput, jobInput, profileTitle, profileDescription, nameInputForm, jobInputForm, inputNameFormPlace, inputNameFormLink, popupButton, closeButtonList, addButton, editButton, popupNewCard,cardNameInput, cardLinkInput, popupEditProfile, buttonTextNormal, buttonTextWhileLoading, validationConfig } from "./constants.js";
-import { initialCards } from "./cards.js";
+import { formEditProfile, formNewPlace, avatarFormElement, deleteCardForm, placesList, formElement, popupList, popupImage, popupTypeImage, bigImageCaption, avatarForm, avatarPopup, avatarImage, newAvatarForm, avatarInput, nameInput, jobInput, profileTitle, profileDescription, nameInputForm, jobInputForm, inputNameFormPlace, inputNameFormLink, popupButton, closeButtonList, addButton, editButton, popupNewCard,cardNameInput, cardLinkInput, popupEditProfile, buttonTextNormal, buttonTextWhileLoading, saveAvatarButton, saveProfileButton, saveCardButton,validationConfig } from "./constants.js";
 import { enableValidation, clearValidation } from "./validation.js";
 import { openModal, closeModal,} from "./modal.js";
 import { createCard } from "./card.js";
-
+import { renderLoading } from "./utils.js";
 import { getInitialCards, addNewCard, getUserInfo, patchUserInfo,  newAvatar } from './api.js'
 import { data } from "jquery";
 
@@ -16,15 +15,6 @@ export function openModalImage(data) {
   openModal(popupTypeImage);
 }
 
-// Функция обработки загрузки //переделано
-function renderLoading(isFetching, button) {
-  if (isFetching) {
-    button.textContent = buttonTextWhileLoading;
-  }
-  else {
-    button.textContent = buttonTextNormal
-  }
-}
 // Функция открытия модального окна "редактировать профиль" //переделано
 function openProfileEdit() {
   openModal(popupEditProfile);
@@ -44,10 +34,10 @@ function openAvatarEdit() {
   clearValidation(avatarForm, validationConfig);
 }
 
-// PLACE SUBMIT //РАБОТАЕТ, но есть проблема с отправкой на сервер
+// PLACE SUBMIT //РАБОТАЕТ
 function placeFormSubmit(evt) {
 evt.preventDefault();
-renderLoading(true, popupButton);
+renderLoading(true, saveCardButton);
 addNewCard(inputNameFormPlace.value, inputNameFormLink.value)
   .then((data) => {
     const card = createCard( data, data.owner, openModalImage );
@@ -56,29 +46,29 @@ addNewCard(inputNameFormPlace.value, inputNameFormLink.value)
     formNewPlace.reset();
   })
   .catch((error) => console.error("Ошибка при добавлении карточки:", error))
-  .finally(() => (renderLoading(false, popupButton)));
+  .finally(() => (renderLoading(false, saveCardButton)));
 }
 
 // USER SUBMIT //РАБОТАЕТ
 function profileFormSubmit(evt) {
   evt.preventDefault();
-  renderLoading(true, popupButton)
+  renderLoading(true,saveProfileButton)
   patchUserInfo(nameInput.value, jobInput.value)
   .then ((profile) => {
     profileTitle.textContent = profile.name;
     profileDescription.textContent = profile.about;
-      closeModal(popupEditProfile);
+    closeModal(popupEditProfile);
   })
   .catch((error) => {
     console.log(error)
   })
-  .finally (() => {renderLoading(false, popupButton)})
+  .finally (() => {renderLoading(false, saveProfileButton)})
 }
 
 // AVATAR SUBMIT //РАБОТАЕТ
 function handleAvatarEditSubmit(evt) {
   evt.preventDefault();
-  renderLoading(true, popupButton)
+  renderLoading(true, saveAvatarButton)
   newAvatar(avatarInput.value) 
   .then ((profile) => {
     avatarImage.style.backgroundImage = `url(${profile.avatar})`;
@@ -86,7 +76,7 @@ function handleAvatarEditSubmit(evt) {
     avatarFormElement.reset();
   })
   .catch ((error) => {console.log(error)})
-  .finally (() => {renderLoading(false, popupButton)})
+  .finally (() => {renderLoading(false, saveAvatarButton)})
 }
 
 // получения информации о пользователе и карточек на страницу //переделано
@@ -113,7 +103,7 @@ editButton.addEventListener('click', openProfileEdit);// "редактирова
 formElement.addEventListener('submit', profileFormSubmit)// "редактировать профиль" submit
 
 addButton.addEventListener("click", openProfileAddPopup);// "новая карточка"
-formNewPlace.addEventListener("click", placeFormSubmit);// "новая карточка" submit
+formNewPlace.addEventListener("submit", placeFormSubmit);// "новая карточка" submit
 
 avatarImage.addEventListener('click', openAvatarEdit); // "обновить аватар"
 avatarForm.addEventListener('submit', handleAvatarEditSubmit);// "обновить аватар" submit
@@ -128,9 +118,9 @@ closeButtonList.forEach (function (button) {
 
 // Закрытие окна на оверлей //переделано
 popupList.forEach((popup) => {
-popup.addEventListener("mousedown", (evt) => {
-  if (evt.target.classList.contains('popup')) {
-    closeModal(popup);
-  }
-});
+  popup.addEventListener("mousedown", (evt) => {
+    if (evt.target.classList.contains('popup')) {
+      closeModal(popup);
+    }
+  });
 });

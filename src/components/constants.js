@@ -45,6 +45,9 @@ export const inputNameFormLink = formNewPlace.elements.link;
 
 //Кнопки
 export const popupButton = document.querySelectorAll(".button");
+export const saveAvatarButton = document.querySelector('.avatar_popup__button');
+export const saveProfileButton = document.querySelector('.profile_popup__button');
+export const saveCardButton = document.querySelector('.card_popup__button')
 export const closeButtonList = Array.from(document.querySelectorAll('.popup__close'));
 export const addButton = document.querySelector(".profile__add-button");
 export const editButton = document.querySelector(".profile__edit-button");
@@ -56,5 +59,5 @@ export const cardLinkInput =  popupNewCard.querySelector(".popup__input_type_url
 export const popupEditProfile = document.querySelector(".popup_type_edit");
 
 //renderLoading
-export const buttonTextWhileLoading = 'Сохранение...'
-export const buttonTextNormal = 'Сохранить'
+export const buttonTextWhileLoading = 'Сохранение...';
+export const buttonTextNormal = 'Сохранить';
